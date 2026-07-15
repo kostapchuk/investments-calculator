@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Investment Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --ring: 240 5.9% 10%;
+    --positive: 142 71% 40%;
+    --negative: 0 72% 51%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 5.5%;
+    --card-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 18%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --ring: 240 4.9% 83.9%;
+    --positive: 142 69% 58%;
+    --negative: 0 72% 60%;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: hsl(var(--background));
+    background-image: radial-gradient(circle at 50% 0%, hsl(var(--muted)) 0%, hsl(var(--background)) 45%);
+    color: hsl(var(--foreground));
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .card {
+    background: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) + 0.25rem);
+    padding: 28px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 10px 30px -12px rgba(0,0,0,0.25);
+    position: relative;
+  }
+
+  .card-header { margin-bottom: 22px; }
+  h1 { font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; }
+  .subtitle { font-size: 0.82rem; color: hsl(var(--muted-foreground)); margin-top: 4px; }
+
+  .theme-toggle {
+    position: absolute;
+    top: 22px;
+    right: 22px;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: calc(var(--radius) - 0.15rem);
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .theme-toggle:hover { background: hsl(var(--muted)); }
+
+  .field { margin-bottom: 16px; }
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+  }
+
+  input {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid hsl(var(--input));
+    border-radius: var(--radius);
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-size: 0.9rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  input::placeholder { color: hsl(var(--muted-foreground)); }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+  input:focus {
+    border-color: hsl(var(--ring));
+    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring) / 0.4);
+  }
+  input[type="date"] { color-scheme: light dark; }
+
+  .tx-list { display: flex; flex-direction: column; gap: 8px; }
+  .tx-row {
+    display: grid;
+    grid-template-columns: 62px 1fr 1fr 34px;
+    gap: 8px;
+    align-items: center;
+  }
+  .tx-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    border-radius: var(--radius);
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+  }
+  .tx-badge.buy { color: hsl(var(--positive)); border-color: hsl(var(--positive) / 0.4); background: hsl(var(--positive) / 0.1); }
+  .tx-badge.sell { color: hsl(var(--negative)); border-color: hsl(var(--negative) / 0.4); background: hsl(var(--negative) / 0.1); }
+  .tx-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .tx-actions .btn-ghost { margin-top: 0; flex: 1; }
+  .tx-remove {
+    height: 40px;
+    width: 34px;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--background));
+    color: hsl(var(--muted-foreground));
+    border-radius: var(--radius);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .tx-remove:hover { color: hsl(var(--negative)); border-color: hsl(var(--negative)); }
+  .btn-ghost {
+    width: 100%;
+    height: 38px;
+    margin-top: 8px;
+    background: transparent;
+    color: hsl(var(--primary));
+    border: 1px dashed hsl(var(--border));
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-ghost:hover { background: hsl(var(--muted)); border-color: hsl(var(--input)); }
+
+  button.btn {
+    width: 100%;
+    height: 42px;
+    margin-top: 6px;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  button.btn:hover { opacity: 0.9; }
+
+  .results {
+    margin-top: 22px;
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 4px 14px;
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid hsl(var(--border));
+  }
+  .result-row:last-child { border-bottom: none; }
+  .result-label { font-size: 0.85rem; color: hsl(var(--muted-foreground)); display: inline-flex; align-items: center; gap: 6px; }
+  .result-value { font-size: 1.05rem; font-weight: 600; }
+
+  .info {
+    width: 15px;
+    height: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--muted-foreground));
+    font-size: 0.6rem;
+    font-weight: 700;
+    cursor: help;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .info:hover, .info:focus { color: hsl(var(--foreground)); border-color: hsl(var(--foreground)); outline: none; }
+
+  .tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: hsl(var(--popover, var(--card)));
+    color: hsl(var(--popover-foreground, var(--foreground)));
+    border: 1px solid hsl(var(--border));
+    padding: 8px 10px;
+    border-radius: calc(var(--radius) - 0.1rem);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.4;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+    z-index: 10;
+  }
+  .tooltip code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.72rem; }
+  .info:hover .tooltip, .info:focus .tooltip { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+  .positive { color: hsl(var(--positive)); }
+  .negative { color: hsl(var(--negative)); }
+  .neutral { color: hsl(var(--foreground)); }
+
+  .hint { font-size: 0.78rem; color: hsl(var(--muted-foreground)); margin-top: 8px; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="card">
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+    <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+  </button>
+
+  <div class="card-header">
+    <h1>PnL / ROI / CAGR</h1>
+    <div class="subtitle">Calculate your investment performance</div>
+  </div>
+
+  <div class="field">
+    <label>Transactions</label>
+    <div class="tx-list" id="txList"></div>
+    <div class="tx-actions">
+      <button type="button" class="btn-ghost" id="addBuy">+ Buy</button>
+      <button type="button" class="btn-ghost" id="addSell">+ Sell</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="holdings">Remaining Holdings ($)</label>
+    <input type="text" id="holdings" inputmode="decimal">
+  </div>
+
+  <button class="btn" id="calcBtn">Calculate</button>
+
+  <div class="results" id="results" style="display:none;">
+    <div class="result-row">
+      <span class="result-label">Invested</span>
+      <span class="result-value" id="invested"></span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Current Value</span>
+      <span class="result-value" id="curVal"></span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">PnL
+        <span class="info" tabindex="0" aria-label="PnL formula">i
+          <span class="tooltip"><code>PnL = Current Value − Invested</code></span>
+        </span>
+      </span>
+      <span class="result-value" id="pnl"></span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">ROI
+        <span class="info" tabindex="0" aria-label="ROI formula">i
+          <span class="tooltip"><code>ROI = (Current Value − Invested) / Invested</code></span>
+        </span>
+      </span>
+      <span class="result-value" id="roi"></span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">CAGR
+        <span class="info" tabindex="0" aria-label="CAGR formula">i
+          <span class="tooltip"><code>CAGR = (1 + ROI)^(365 / days) − 1</code></span>
+        </span>
+      </span>
+      <span class="result-value" id="cagr"></span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Holding Period</span>
+      <span class="result-value" id="period"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const sunIcon = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>';
+  const moonIcon = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+
+  function applyTheme(theme) {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.getElementById('themeIcon').innerHTML = theme === 'dark' ? sunIcon : moonIcon;
+    localStorage.setItem('calc-theme', theme);
+  }
+  const savedTheme = localStorage.getItem('calc-theme') ||
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(savedTheme);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
+  });
+
+  function todayStr() {
+    const d = new Date();
+    const off = d.getTimezoneOffset();
+    return new Date(d.getTime() - off * 60000).toISOString().slice(0, 10);
+  }
+
+  function addTxRow(type = 'Buy', date = '', amount = '') {
+    const row = document.createElement('div');
+    row.className = 'tx-row';
+    row.dataset.type = type;
+    row.innerHTML = `
+      <span class="tx-badge ${type === 'Buy' ? 'buy' : 'sell'}">${type}</span>
+      <input type="date" class="tx-date" value="${date}">
+      <input type="text" class="tx-amount" inputmode="decimal" value="${amount}">
+      <button type="button" class="tx-remove" aria-label="Remove transaction">&times;</button>
+    `;
+    row.querySelector('.tx-remove').addEventListener('click', () => row.remove());
+    document.getElementById('txList').appendChild(row);
+  }
+  addTxRow('Buy');
+  addTxRow('Sell', todayStr());
+  document.getElementById('addBuy').addEventListener('click', () => addTxRow('Buy'));
+  document.getElementById('addSell').addEventListener('click', () => addTxRow('Sell', todayStr()));
+
+  function parseAmount(v) {
+    if (v === null || v === undefined) return NaN;
+    return parseFloat(String(v).replace(',', '.').trim());
+  }
+
+  function getPeriodDays() {
+    const rows = document.querySelectorAll('#txList .tx-row');
+    let minDate = null, maxDate = null;
+    rows.forEach(r => {
+      const d = r.querySelector('.tx-date').value;
+      if (d) { if (!minDate || d < minDate) minDate = d; if (!maxDate || d > maxDate) maxDate = d; }
+    });
+    if (!minDate) {
+      alert('Add at least one transaction with a date to determine the holding period.');
+      return null;
+    }
+    const start = new Date(minDate);
+    const end = maxDate ? new Date(maxDate) : new Date();
+    const diff = Math.round((end - start) / (1000 * 60 * 60 * 24));
+    if (diff < 1) {
+      alert('Holding period must be at least 1 day.');
+      return null;
+    }
+    return diff;
+  }
+
+  function calculate() {
+    const days = getPeriodDays();
+    if (days === null) return;
+
+    let totalInvested = 0, totalRealized = 0;
+    document.querySelectorAll('#txList .tx-row').forEach(r => {
+      const type = r.dataset.type;
+      const amt = parseAmount(r.querySelector('.tx-amount').value);
+      if (!amt || amt <= 0) return;
+      if (type === 'Buy') totalInvested += amt; else totalRealized += amt;
+    });
+
+    if (totalInvested <= 0) {
+      alert('Add at least one Buy transaction with an amount.');
+      return;
+    }
+
+    const holdings = parseAmount(document.getElementById('holdings').value) || 0;
+    const currentValue = totalRealized + holdings;
+
+    const pnl = currentValue - totalInvested;
+    const roi = pnl / totalInvested;
+    const cagr = (Math.pow(1 + roi, 365 / days) - 1) * 100;
+
+    const colorClass = (val) => val > 0 ? 'positive' : val < 0 ? 'negative' : 'neutral';
+    const fmt = (val) => (val >= 0 ? '+$' : '-$') + Math.abs(val).toFixed(2);
+    const pct = (val) => (val >= 0 ? '+' : '') + val.toFixed(2) + '%';
+
+    document.getElementById('invested').textContent = fmt(totalInvested);
+    document.getElementById('invested').className = 'result-value neutral';
+    document.getElementById('curVal').textContent = fmt(currentValue);
+    document.getElementById('curVal').className = 'result-value neutral';
+
+    document.getElementById('pnl').textContent = fmt(pnl);
+    document.getElementById('pnl').className = 'result-value ' + colorClass(pnl);
+    document.getElementById('roi').textContent = pct(roi * 100);
+    document.getElementById('roi').className = 'result-value ' + colorClass(roi);
+    document.getElementById('cagr').textContent = pct(cagr);
+    document.getElementById('cagr').className = 'result-value ' + colorClass(cagr);
+
+    document.getElementById('period').textContent = days + ' days';
+    document.getElementById('period').className = 'result-value neutral';
+
+    document.getElementById('results').style.display = 'block';
+  }
+
+  document.getElementById('calcBtn').addEventListener('click', calculate);
+  document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') calculate(); });
+  });
+</script>
+</body>
+</html>
