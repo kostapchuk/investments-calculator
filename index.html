@@ -2,7 +2,7 @@
 <html lang="en" class="">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Investment Calculator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -65,15 +65,15 @@
     color: hsl(var(--card-foreground));
     border: 1px solid hsl(var(--border));
     border-radius: calc(var(--radius) + 0.25rem);
-    padding: 28px;
+    padding: 32px;
     width: 100%;
-    max-width: 420px;
+    max-width: 540px;
     box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 10px 30px -12px rgba(0,0,0,0.25);
     position: relative;
   }
 
-  .card-header { margin-bottom: 22px; }
-  h1 { font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; }
+  .card-header { margin-bottom: 26px; }
+  h1 { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; }
   .subtitle { font-size: 0.82rem; color: hsl(var(--muted-foreground)); margin-top: 4px; }
 
   .theme-toggle {
@@ -105,13 +105,13 @@
 
   input {
     width: 100%;
-    height: 40px;
-    padding: 0 12px;
+    height: 44px;
+    padding: 0 14px;
     border: 1px solid hsl(var(--input));
     border-radius: var(--radius);
     background: hsl(var(--background));
     color: hsl(var(--foreground));
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-family: inherit;
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
@@ -129,8 +129,8 @@
   .tx-list { display: flex; flex-direction: column; gap: 8px; }
   .tx-row {
     display: grid;
-    grid-template-columns: 62px 1fr 1fr 34px;
-    gap: 8px;
+    grid-template-columns: 70px 1fr 1fr 84px;
+    gap: 10px;
     align-items: center;
   }
   .tx-badge {
@@ -149,9 +149,10 @@
   .tx-badge.sell { color: hsl(var(--negative)); border-color: hsl(var(--negative) / 0.4); background: hsl(var(--negative) / 0.1); }
   .tx-actions { display: flex; gap: 8px; margin-top: 8px; }
   .tx-actions .btn-ghost { margin-top: 0; flex: 1; }
+  .tx-btns { display: inline-flex; flex-direction: row; gap: 6px; align-items: center; }
   .tx-remove {
-    height: 40px;
-    width: 34px;
+    height: 44px;
+    width: 38px;
     border: 1px solid hsl(var(--border));
     background: hsl(var(--background));
     color: hsl(var(--muted-foreground));
@@ -159,18 +160,41 @@
     font-size: 1.1rem;
     line-height: 1;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
     transition: all 0.15s;
   }
   .tx-remove:hover { color: hsl(var(--negative)); border-color: hsl(var(--negative)); }
+  .tx-remove:focus { outline: none; }
+  .tx-copy {
+    height: 44px;
+    width: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--background));
+    color: hsl(var(--muted-foreground));
+    border-radius: var(--radius);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: all 0.15s;
+  }
+  .tx-copy:hover { color: hsl(var(--primary)); border-color: hsl(var(--primary)); }
+  .tx-copy:focus { outline: none; }
+  .tx-copy svg { pointer-events: none; }
   .btn-ghost {
     width: 100%;
-    height: 38px;
+    height: 48px;
     margin-top: 8px;
     background: transparent;
     color: hsl(var(--primary));
     border: 1px dashed hsl(var(--border));
     border-radius: var(--radius);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 500;
     font-family: inherit;
     cursor: pointer;
@@ -180,13 +204,13 @@
 
   button.btn {
     width: 100%;
-    height: 42px;
-    margin-top: 6px;
+    height: 48px;
+    margin-top: 8px;
     background: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
     border: none;
     border-radius: var(--radius);
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 600;
     font-family: inherit;
     cursor: pointer;
@@ -212,7 +236,7 @@
   }
   .result-row:last-child { border-bottom: none; }
   .result-label { font-size: 0.85rem; color: hsl(var(--muted-foreground)); display: inline-flex; align-items: center; gap: 6px; }
-  .result-value { font-size: 1.05rem; font-weight: 600; }
+  .result-value { font-size: 1.15rem; font-weight: 600; }
 
   .info {
     width: 15px;
@@ -260,6 +284,82 @@
 
   .hint { font-size: 0.78rem; color: hsl(var(--muted-foreground)); margin-top: 8px; }
   .hidden { display: none; }
+  .form-error {
+    display: none;
+    margin-top: 12px;
+    padding: 10px 12px;
+    border: 1px solid hsl(var(--negative) / 0.4);
+    background: hsl(var(--negative) / 0.08);
+    color: hsl(var(--negative));
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 480px) {
+    body {
+      padding: calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+      -webkit-text-size-adjust: 100%;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .card {
+      padding: 24px 18px;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 12px 32px -16px rgba(0,0,0,0.25);
+    }
+    .card-header { padding-right: 40px; margin-bottom: 24px; }
+    h1 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; }
+    .subtitle { font-size: 0.85rem; }
+    .theme-toggle, .header-icon { top: 18px; right: 18px; width: 36px; height: 36px; }
+
+    .field { margin-bottom: 20px; }
+    label { font-size: 0.82rem; margin-bottom: 8px; }
+
+    input {
+      height: 48px;
+      font-size: 17px;
+      border-radius: 12px;
+      padding: 0 14px;
+    }
+
+    .tx-list { gap: 12px; }
+    .tx-row {
+      grid-template-columns: 56px 1fr 44px;
+      grid-template-areas:
+        "badge date remove"
+        "badge amount remove";
+      row-gap: 6px;
+      column-gap: 10px;
+      padding: 12px;
+      border: 1px solid hsl(var(--border));
+      border-radius: 14px;
+      background: hsl(var(--muted) / 0.4);
+    }
+    .tx-row .tx-badge {
+      grid-area: badge;
+      align-self: stretch;
+      height: auto;
+      border-radius: 10px;
+      font-size: 0.72rem;
+    }
+    .tx-row .tx-date { grid-area: date; }
+    .tx-row .tx-amount { grid-area: amount; }
+    .tx-row .tx-btns { grid-area: remove; align-self: center; }
+    .tx-btns { gap: 8px; }
+    .tx-copy, .tx-remove { height: 44px; width: 44px; border-radius: 12px; }
+
+    .tx-actions { flex-direction: column; gap: 12px; }
+    .tx-actions .btn-ghost { width: 100%; height: 50px; font-size: 1rem; border-radius: 12px; }
+
+    .hint { font-size: 0.76rem; margin-top: 8px; line-height: 1.4; }
+
+    button.btn { height: 50px; font-size: 1.05rem; border-radius: 14px; margin-top: 8px; }
+
+    .form-error { border-radius: 12px; font-size: 0.82rem; }
+
+    .result-row { padding: 14px 0; }
+    .result-value { font-size: 1.15rem; }
+  }
 </style>
 </head>
 <body>
@@ -283,11 +383,13 @@
   </div>
 
   <div class="field">
-    <label for="holdings">Remaining Holdings ($)</label>
-    <input type="text" id="holdings" inputmode="decimal">
+    <label for="holdings">Remaining Holdings</label>
+    <input type="text" id="holdings" inputmode="decimal" placeholder="($) 0.00">
+    <div class="hint">Current market value of what you still own. Leave empty if you've sold everything.</div>
   </div>
 
   <button class="btn" id="calcBtn">Calculate</button>
+  <div class="form-error" id="formError" style="display:none;"></div>
 
   <div class="results" id="results" style="display:none;">
     <div class="result-row">
@@ -357,11 +459,19 @@
     row.dataset.type = type;
     row.innerHTML = `
       <span class="tx-badge ${type === 'Buy' ? 'buy' : 'sell'}">${type}</span>
-      <input type="date" class="tx-date" value="${date}">
-      <input type="text" class="tx-amount" inputmode="decimal" value="${amount}">
-      <button type="button" class="tx-remove" aria-label="Remove transaction">&times;</button>
+      <input type="date" class="tx-date" value="${date}" placeholder="Trade date" aria-label="Trade date">
+      <input type="text" class="tx-amount" inputmode="decimal" value="${amount}" placeholder="($) 0.00">
+      <span class="tx-btns">
+        <button type="button" class="tx-copy" aria-label="Duplicate transaction" title="Duplicate">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </button>
+        <button type="button" class="tx-remove" aria-label="Remove transaction" title="Remove">&times;</button>
+      </span>
     `;
     row.querySelector('.tx-remove').addEventListener('click', () => row.remove());
+    row.querySelector('.tx-copy').addEventListener('click', () => {
+      addTxRow(row.dataset.type, row.querySelector('.tx-date').value, row.querySelector('.tx-amount').value);
+    });
     document.getElementById('txList').appendChild(row);
   }
   addTxRow('Buy');
@@ -382,20 +492,32 @@
       if (d) { if (!minDate || d < minDate) minDate = d; if (!maxDate || d > maxDate) maxDate = d; }
     });
     if (!minDate) {
-      alert('Add at least one transaction with a date to determine the holding period.');
+      showError('Add at least one transaction with a date to set the holding period.');
       return null;
     }
     const start = new Date(minDate);
     const end = maxDate ? new Date(maxDate) : new Date();
     const diff = Math.round((end - start) / (1000 * 60 * 60 * 24));
     if (diff < 1) {
-      alert('Holding period must be at least 1 day.');
+      showError('Holding period must be at least 1 day.');
       return null;
     }
     return diff;
   }
 
+  function showError(msg) {
+    const el = document.getElementById('formError');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+  function clearError() {
+    const el = document.getElementById('formError');
+    el.textContent = '';
+    el.style.display = 'none';
+  }
+
   function calculate() {
+    clearError();
     const days = getPeriodDays();
     if (days === null) return;
 
@@ -408,7 +530,7 @@
     });
 
     if (totalInvested <= 0) {
-      alert('Add at least one Buy transaction with an amount.');
+      showError('Add at least one Buy transaction with an amount to calculate.');
       return;
     }
 
@@ -439,6 +561,7 @@
     document.getElementById('period').className = 'result-value neutral';
 
     document.getElementById('results').style.display = 'block';
+    clearError();
   }
 
   document.getElementById('calcBtn').addEventListener('click', calculate);
